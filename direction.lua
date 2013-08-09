@@ -24,8 +24,8 @@ Direction.new = function(initial)
      self.current = initial
   end
 
-  function self.opposite(test)
-    local switcher = switch.create(
+
+  local switcher = switch.create(
     {
       ["cases"] = {
         [Direction.left] = Direction.right,
@@ -37,7 +37,9 @@ Direction.new = function(initial)
       },
       ["default"] = ""
     }
-    )
+  )
+
+  function self.opposite()
     return switcher(self.current)
   end
 
