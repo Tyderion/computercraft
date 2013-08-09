@@ -1,4 +1,4 @@
-local function create( config )
+function create( config )
   local function printInfo( )
     print(" ----- Example Use of this create ----- ")
     print(" -----       1. Configure         ----- ")
@@ -25,7 +25,7 @@ local function create( config )
   end
   local cases = config.cases
   local default = config.default
-  switch = function(access)
+  switcher = function(access)
     result = cases[access]
     if result == nil then
       if type(default) == "function" then
@@ -40,5 +40,19 @@ local function create( config )
       return result
     end
   end
-  return switch
+  return switcher
 end
+local test = 17
+testswitch = create(
+{
+  ["cases"] = {
+      ["test"] = "YES", -- value case, can also be afunction
+      ["fail"] = function() return "Fail " .. test*2 end-- function case, can also be a value
+  },
+  ["default"] = function() return "Default function" .. 5*3 end -- Function default, can be value
+}
+)
+
+print(testswitch("test")) -- "YES"
+print(testswitch("fail")) -- "Fail 34"
+print(testswitch("missing")) -- "Default Function 15"
