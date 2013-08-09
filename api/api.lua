@@ -49,6 +49,8 @@ function fastRectangle( length, width, direction)
 end
 
 function fastRectTurn(direction, whichLine)
+  -- Alternates between turning the turtle left and right
+  -- depending on the direction it reverses the alteration
   local compare = 0
   if direction == "left" then
     comparer = 0
@@ -60,6 +62,7 @@ function fastRectTurn(direction, whichLine)
   else
     turtle.turnLeft()
   end
+end
 
 
 function rectangle( length, width )
