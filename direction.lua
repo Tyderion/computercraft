@@ -18,10 +18,12 @@ Direction.isValid = function(direction)
 end
 Direction.new = function(initial)
   local self = {
-    current = Direction.left
+    value = Direction.left
   }
   if Direction.isValid(initial) then
-     self.current = initial
+     self.value = initial
+  else
+    return nil
   end
 
 
@@ -40,14 +42,14 @@ Direction.new = function(initial)
   )
 
   function self.opposite()
-    return switcher(self.current)
+    return switcher(self.value)
   end
 
   return self
 end
 t = Direction.new("left")
-print(t.current .. " is opposite of " .. t.opposite())
+print(t.value .. " is opposite of " .. t.opposite())
 t = Direction.new("up")
-print(t.current .. " is opposite of " .. t.opposite())
+print(t.value .. " is opposite of " .. t.opposite())
 t = Direction.new("forward")
-print(t.current .. " is opposite of " .. t.opposite())
+print(t.value .. " is opposite of " .. t.opposite())

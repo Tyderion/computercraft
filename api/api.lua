@@ -1,3 +1,13 @@
+os.load("direction")
+
+function line( length )
+    local x = 0
+    for i=1,length do
+        dig()
+        walk()
+    end
+end
+
 function dig()
   while turtle.detect() do
     turtle.dig()
@@ -16,55 +26,6 @@ function walk(length)
   end
 end
 
-
-function line( length )
-    local x = 0
-    for i=1,length do
-        dig()
-        walk()
-    end
-end
-
-function walkBack(length)
-  for i=1,length do
-    turtle.back()
-  end
-end
-
-function fastRectangle( length, width, direction)
-  -- TODO: Use direction-class
-  if direction == nil then
-    direction = "left"
-  end
-  if direction != "left" and direction != "right" then
-    print(direction .. " is no valid direction for rectangles")
-  end
-
-  for i=1,width do
-    line(length)
-    fastRectTurn(direction,i)
-  end
-
-
-end
-
-function fastRectTurn(direction, whichLine)
-  -- Alternates between turning the turtle left and right
-  -- depending on the direction it reverses the alteration
-  local compare = 0
-  if direction == "left" then
-    comparer = 0
-  elseif direction == "right" then
-    comparer = 1
-  end
-  if (whichLine % 2 == comparer) then
-    turtle.turnRight()
-  else
-    turtle.turnLeft()
-  end
-end
-
-
 function rectangle( length, width )
     for width_counter=1, width do
         line(length)
@@ -77,3 +38,40 @@ function rectangle( length, width )
         end
     end
 end
+
+function walkBack(length)
+  for i=1,length do
+    turtle.back()
+  end
+end
+
+function fastRectangle( length, width, direction)
+  -- TODO: Use direction-class
+  if direction.value != Direction.left or direction.value != Direction.right then
+    print(direction.value .. " is no valid direction for rectangles")
+  end
+
+  for i=1,width do
+    line(length)
+    fastRectTurn(direction,i)
+  end
+end
+
+function fastRectTurn(direction, whichLine)
+  -- Alternates between turning the turtle left and right
+  -- depending on the direction it reverses the alteration
+  local compare = 0
+  if direction.value == Direction.left then
+    comparer = 0
+  elseif direction == Direction.right then
+    comparer = 1
+  end
+  if (whichLine % 2 == comparer) then
+    turtle.turnRight()
+  else
+    turtle.turnLeft()
+  end
+end
+
+
+
