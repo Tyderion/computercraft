@@ -1,0 +1,6 @@
+shell.run("rm relay")
+shell.run("pastebin get QEvpL30r relay")
+shell.run("rm update")
+shell.run("pastebin get KVUxSEcx update")
+shell.run("clear")
+shell.run("relay")
