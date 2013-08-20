@@ -4,17 +4,17 @@ local upload_argument_name = "upload"
 local install_argument_name = "install"
 local update_argument_name = "update"
 local program_name = "cpm"
+local saveFileName = "listOfPrograms"
+local installedPrograms = {}
+local program_code = "wP9VAie2"
 
 local function printUsage()
 	print( "Usages:" )
-	print( program_name .. " " .. upload_argument_name .. " <filename>" )
 	print( program_name .. " " .. install_argument_name .. " <code> <filename>" )
 	print( program_name .. " " .. update_argument_name .. " [<filename>]" )
+	print( program_name .. " " .. upload_argument_name .. " <filename>" )
 end
 
-local saveFileName = "listOfPrograms"
-
-local installedPrograms = {}
 
 local function loadInstalledPrograms()
 	if fs.exists(saveFileName) then
@@ -31,6 +31,9 @@ local function loadInstalledPrograms()
 			end
 		end
 		file.close()
+	end
+	if installedPrograms[program_name] == nil then
+		installedPrograms[program_name] = program_code
 	end
 end
 
@@ -140,6 +143,7 @@ end
 
 
 local function run(tArgs)
+
 	if not http then
 		print( "Pastebin requires http API" )
 		print( "Set enableAPI_http to 1 in mod_ComputerCraft.cfg" )
