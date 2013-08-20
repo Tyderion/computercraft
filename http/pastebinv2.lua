@@ -121,7 +121,9 @@ local function install(code, name, output)
 		response.close()
 		saveNewProgram(name, code, text)
 		if not (output == nil) then
-			print( output.saved )
+			if not (output.saved == nil) then
+				print( output.saved )
+			end
 		end
 		return true
 
@@ -141,8 +143,8 @@ local function update(program)
 		local movedname = "tmpMove" .. program
 		shell.run("mv " .. program .. " " ..  movedname)
 		local installOutput = {
-			["download"] =  "Updating" .. program .. "...",
-			["saved"] = "",
+			["download"] =  "Updating " .. program .. "...",
+			["saved"] = nil,
 			["failed"] = "Failed to download."
 		}
 		if install(code, program, installOutput) then
