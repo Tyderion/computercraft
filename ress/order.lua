@@ -11,7 +11,7 @@ end
 ress = args[1]
 amount = 1
 if #args >= 2 then
-   amount = args[2]
+    amount = args[2]
 end
 
 if args[1] == "list" then
