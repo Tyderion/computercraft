@@ -36,7 +36,7 @@ end
 
 local function saveNewProgram(name, code, text)
 	installedPrograms[name] = code
-	local path = shell.resolve( sFile )
+	local path = shell.resolve( name )
 	if not fs.exists(path) then
 		local file = fs.open( path, "w" )
 		file.write( text )
@@ -97,13 +97,14 @@ local function get(code, name)
 	end
 
 	-- GET the contents from pastebin
-	write( "Downloading '" .. code .. "' from pastebin..." )
+	write( "Downloading '" .. code .. "' from pastebin...\n" )
 	local response = http.get(
 		"http://pastebin.com/raw.php?i="..textutils.urlEncode( code )
 		)
 
 	if response then
 		local text = response.readAll()
+		response.close()
 		saveNewProgram(name, code, text)
 		print( "Downloaded as ".. name )
 
