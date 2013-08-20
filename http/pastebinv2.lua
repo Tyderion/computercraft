@@ -19,14 +19,12 @@ end
 local function loadInstalledPrograms()
 	if fs.exists(saveFileName) then
 		file = fs.open(saveFileName, "r")
-		print("Installed Programs ... \n")
 		for line in file.readLine do
 			for name,code in string.gmatch(line, "([^=]+)=([^=]+)") do
 				if shell.resolveProgram(name) == nil then
 					print(name .. " is not installed anymore")
 				else
 				  	installedPrograms[name] = code
-				  	print(name .. " = " .. code)
 				end
 			end
 		end
@@ -117,17 +115,17 @@ local function install(code, name)
 		local text = response.readAll()
 		response.close()
 		saveNewProgram(name, code, text)
-		print( "Downloaded as ".. name )
+		print( "Saved as ".. name .. ".\n")
 
 	else
-		print( "Failed." )
+		print( "Failed.\n" )
 	end
 end
 
 local function update(program)
 	local code = installedPrograms[program]
 	if code == nil then
-		print("program '" .. program .. "' is not installed.")
+		print("program '" .. program .. "' is not installed.\n")
 	else
 		shell.run("rm " .. program)
 		install(code, program)
