@@ -161,53 +161,49 @@ local function updateAllPrograms()
 	end
 end
 
+local tArgs = { ... }
 
+if not http then
+	print( "Pastebin requires http API" )
+	print( "Set enableAPI_http to 1 in mod_ComputerCraft.cfg" )
+	return
+end
 
-local function run(tArgs)
+loadInstalledPrograms()
 
-	if not http then
-		print( "Pastebin requires http API" )
-		print( "Set enableAPI_http to 1 in mod_ComputerCraft.cfg" )
-		return
+local command = tArgs[1]
+if command == upload_argument_name then
+	if #tArgs < 2 then
+		printUsage()
+	  	return
 	end
-
-	loadInstalledPrograms()
-
-	local command = tArgs[1]
-	if command == upload_argument_name then
-		if #tArgs < 2 then
-			printUsage()
-		  	return
-		end
-		local sFile = tArgs[2]
-		upload(sFile)
-	elseif command == install_argument_name then
-		if #tArgs < 3 then
-			printUsage()
-			return
-		end
-		local code = tArgs[2]
-		local file = tArgs[3]
-		local installOutput = {
-			["download"] =  "Downloading '" .. code .. "' from pastebin...",
-			["saved"] = "Saved as ".. name .. ".",
-			["failed"] = "Failed to download."
-		}
-		install(code, file, installOutput)
-	elseif command == update_argument_name then
-		if #tArgs < 2 then
-			updateAllPrograms()
-		else
-			local program = tArgs[2]
-
-			update(program)
-		end
-	else
+	local sFile = tArgs[2]
+	upload(sFile)
+elseif command == install_argument_name then
+	if #tArgs < 3 then
 		printUsage()
 		return
 	end
+	local code = tArgs[2]
+	local file = tArgs[3]
+	local installOutput = {
+		["download"] =  "Downloading '" .. code .. "' from pastebin...",
+		["saved"] = "Saved as ".. name .. ".",
+		["failed"] = "Failed to download."
+	}
+	install(code, file, installOutput)
+elseif command == update_argument_name then
+	if #tArgs < 2 then
+		updateAllPrograms()
+	else
+		local program = tArgs[2]
 
-	saveInstalledPrograms()
+		update(program)
+	end
+else
+	printUsage()
+	return
 end
 
-run({ ... })
+saveInstalledPrograms()
+
