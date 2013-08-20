@@ -1,4 +1,4 @@
-os.load("direction")
+os.loadAPI("direction")
 
 function line( length )
     local x = 0
@@ -11,7 +11,7 @@ end
 function dig()
   while turtle.detect() do
     turtle.dig()
-    sleep(0.1)
+    sleep(0.4)
   end
 end
 
@@ -22,7 +22,7 @@ function walk(length)
     turtle.refuel()
   end
   for i=1,real_length do
-    turtle.forward()
+    while  !turtle.forward() do end
   end
 end
 
@@ -40,38 +40,38 @@ function rectangle( length, width )
 end
 
 function walkBack(length)
-  for i=1,length do
+  for i=1,tonumber(length) do
     turtle.back()
   end
 end
 
-function fastRectangle( length, width, direction)
-  -- TODO: Use direction-class
-  if direction.value != Direction.left or direction.value != Direction.right then
-    print(direction.value .. " is no valid direction for rectangles")
-  end
+-- function fastRectangle( length, width, direction)
+--   -- TODO: Use direction-class
+--   if direction.value != Direction.left or direction.value != Direction.right then
+--     print(direction.value .. " is no valid direction for rectangles")
+--   end
 
-  for i=1,width do
-    line(length)
-    fastRectTurn(direction,i)
-  end
-end
+--   for i=1,width do
+--     line(length)
+--     fastRectTurn(direction,i)
+--   end
+-- end
 
-function fastRectTurn(direction, whichLine)
-  -- Alternates between turning the turtle left and right
-  -- depending on the direction it reverses the alteration
-  local compare = 0
-  if direction.value == Direction.left then
-    comparer = 0
-  elseif direction == Direction.right then
-    comparer = 1
-  end
-  if (whichLine % 2 == comparer) then
-    turtle.turnRight()
-  else
-    turtle.turnLeft()
-  end
-end
+-- function fastRectTurn(direction, whichLine)
+--   -- Alternates between turning the turtle left and right
+--   -- depending on the direction it reverses the alteration
+--   local compare = 0
+--   if direction.value == Direction.left then
+--     comparer = 0
+--   elseif direction == Direction.right then
+--     comparer = 1
+--   end
+--   if (whichLine % 2 == comparer) then
+--     turtle.turnRight()
+--   else
+--     turtle.turnLeft()
+--   end
+-- end
 
 
 
