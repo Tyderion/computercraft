@@ -8,6 +8,9 @@ local saveFileName = "listOfPrograms"
 local installedPrograms = {}
 local program_code = "wP9VAie2"
 
+
+
+
 local function printUsage()
 	print( "Usages:" )
 	print( program_name .. " " .. install_argument_name .. " <code> <filename>" )
@@ -95,18 +98,20 @@ local function upload(sFile)
 	end
 end
 
-local function install(code, name)
+local function install(code, name, output)
 	-- Download a file from pastebin.com
 	-- Determine file to download
 
 	local path = shell.resolve( name )
 	if fs.exists( path ) then
 		print( "File already exists" )
-		return
+		return false
 	end
 
 	-- GET the contents from pastebin
-	write( "Downloading '" .. code .. "' from pastebin...\n" )
+	if not (output == nil) then
+		print( output.download )
+	end
 	local response = http.get(
 		"http://pastebin.com/raw.php?i="..textutils.urlEncode( code )
 		)
@@ -115,25 +120,41 @@ local function install(code, name)
 		local text = response.readAll()
 		response.close()
 		saveNewProgram(name, code, text)
-		print( "Saved as ".. name .. ".\n")
+		if not (output == nil) then
+			print( output.saved )
+		end
+		return true
 
 	else
-		print( "Failed.\n" )
+		if not (output == nil) then
+			print( output.failed )
+		end
+		return false
 	end
 end
 
 local function update(program)
 	local code = installedPrograms[program]
 	if code == nil then
-		print("program '" .. program .. "' is not installed.\n")
+		print("program '" .. program .. "' is not installed.")
 	else
-		shell.run("rm " .. program)
-		install(code, program)
+		local movedname = "tmpMove" .. program
+		shell.run("mv " .. program .. " " ..  movedname)
+		local installOutput = {
+			["download"] =  "Updating" .. program .. "...",
+			["saved"] = "",
+			["failed"] = "Failed to download."
+		}
+		if install(code, program, installOutput) then
+			shell.run("rm " .. movedname)
+		end
+
 	end
 end
 
 local function updateAllPrograms()
 	for program,_ in pairs(installedPrograms) do
+
 		update(program)
 	end
 end
@@ -165,12 +186,18 @@ local function run(tArgs)
 		end
 		local code = tArgs[2]
 		local file = tArgs[3]
-		install(code, file)
+		local installOutput = {
+			["download"] =  "Downloading '" .. code .. "' from pastebin...",
+			["saved"] = "Saved as ".. name .. ".",
+			["failed"] = "Failed to download."
+		}
+		install(code, file, installOutput)
 	elseif command == update_argument_name then
 		if #tArgs < 2 then
 			updateAllPrograms()
 		else
 			local program = tArgs[2]
+
 			update(program)
 		end
 	else
