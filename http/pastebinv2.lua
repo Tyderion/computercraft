@@ -34,8 +34,14 @@ local function saveInstalledPrograms()
 	file.close()
 end
 
-local function saveNewProgram(name, code)
+local function saveNewProgram(name, code, text)
 	installedPrograms[name] = code
+	local path = shell.resolve( sFile )
+	if not fs.exists(path) then
+		local file = fs.open( path, "w" )
+		file.write( text )
+		file.close()
+	end
 end
 
 local function put(sFile)
@@ -74,48 +80,55 @@ local function put(sFile)
 		local sCode = string.match( sResponse, "[^/]+$" )
 		print( "Uploaded as "..sResponse )
 		print( "Run \"pastebin get "..sCode.."\" to download anywhere" )
-		saveNewProgram(sFile, sCode)
+		saveNewProgram(sFile, sCode, sText)
 	else
 		print( "Failed." )
 	end
 end
 
-local function get(sCode, sFile)
+local function get(code, name)
 	-- Download a file from pastebin.com
 	-- Determine file to download
-	-- local sCode = tArgs[2]
-	-- local sFile = tArgs[3]
-	saveNewProgram(sFile, sCode)
-	local sPath = shell.resolve( sFile )
-	if fs.exists( sPath ) then
+
+	local path = shell.resolve( name )
+	if fs.exists( path ) then
 		print( "File already exists" )
 		return
 	end
 
 	-- GET the contents from pastebin
-	write( "Connecting to pastebin.com... " )
+	write( "Downloading '" .. code .. "' from pastebin..." )
 	local response = http.get(
-		"http://pastebin.com/raw.php?i="..textutils.urlEncode( sCode )
+		"http://pastebin.com/raw.php?i="..textutils.urlEncode( code )
 		)
 
 	if response then
-		print( "Success." )
-
-		local sResponse = response.readAll()
-		response.close()
-
-		local file = fs.open( sPath, "w" )
-		file.write( sResponse )
-		file.close()
-
-		print( "Downloaded as "..sFile )
+		local text = response.readAll()
+		saveNewProgram(name, code, text)
+		print( "Downloaded as ".. name )
 
 	else
 		print( "Failed." )
 	end
 end
 
-local tArgs = { ... }
+local function update(program)
+	local code = installedPrograms[program]
+	if code == nil then
+		print("program '" .. program .. "' is not installed.")
+	else
+		shell.run("rm " .. program)
+		get(code, program)
+	end
+end
+
+local function updateAllPrograms()
+	for program,_ in pairs(installedPrograms) do
+		update(program)
+	end
+end
+
+
 
 if not http then
 	print( "Pastebin requires http API" )
@@ -123,34 +136,39 @@ if not http then
 	return
 end
 
-loadInstalledPrograms()
+local function run(tArgs)
 
-local command = tArgs[1]
-if command == "put" then
-	if #tArgs < 2 then
-		printUsage()
-	  	return
-	end
-	local sFile = tArgs[2]
-	put(sFile)
-elseif command == "get" then
-	if #tArgs < 3 then
+	loadInstalledPrograms()
+
+	local command = tArgs[1]
+	if command == "put" then
+		if #tArgs < 2 then
+			printUsage()
+		  	return
+		end
+		local sFile = tArgs[2]
+		put(sFile)
+	elseif command == "get" then
+		if #tArgs < 3 then
+			printUsage()
+			return
+		end
+		local code = tArgs[2]
+		local file = tArgs[3]
+		get(code, file)
+	elseif command == "update" then
+		if #tArgs < 2 then
+			updateAllPrograms()
+		else
+			local program = tArgs[2]
+			update(program)
+		end
+	else
 		printUsage()
 		return
 	end
-	local code = tArgs[2]
-	local file = tArgs[3]
-	get(code, file)
-elseif command == "update" then
-	if #tArgs < 2 then
-		updateAllPrograms()
-	else
-		local program = tArgs[2]
-		update(program)
-	end
-else
-	printUsage()
-	return
+
+	saveInstalledPrograms()
 end
 
-saveInstalledPrograms()
+run({ ... })
