@@ -1,9 +1,15 @@
 -- Main Program taken from Computercraft mod
+
+local upload_argument_name = "upload"
+local install_argument_name = "install"
+local update_argument_name = "update"
+local program_name = "cpm"
+
 local function printUsage()
 	print( "Usages:" )
-	print( "pastebin put <filename>" )
-	print( "pastebin get <code> <filename>" )
-	print( "pastebin update [<filename>]" )
+	print( program_name .. " " .. upload_argument_name .. " <filename>" )
+	print( program_name .. " " .. install_argument_name .. " <code> <filename>" )
+	print( program_name .. " " .. update_argument_name .. " [<filename>]" )
 end
 
 local saveFileName = "listOfPrograms"
@@ -16,7 +22,9 @@ local function loadInstalledPrograms()
 		print("Installed Programs ... \n")
 		for line in file.readLine do
 			for name,code in string.gmatch(line, "([^=]+)=([^=]+)") do
-				if not (shell.resolveProgram(name) == nil) then
+				if shell.resolveProgram(name) == nil then
+					print(name .. " is not installed anymore")
+				else
 				  	installedPrograms[name] = code
 				  	print(name .. " = " .. code)
 				end
@@ -44,7 +52,7 @@ local function saveNewProgram(name, code, text)
 	end
 end
 
-local function put(sFile)
+local function upload(sFile)
 	-- Upload a file to pastebin.com
 	local sPath = shell.resolve( sFile )
 	-- Determine file to upload
@@ -86,7 +94,7 @@ local function put(sFile)
 	end
 end
 
-local function get(code, name)
+local function install(code, name)
 	-- Download a file from pastebin.com
 	-- Determine file to download
 
@@ -119,7 +127,7 @@ local function update(program)
 		print("program '" .. program .. "' is not installed.")
 	else
 		shell.run("rm " .. program)
-		get(code, program)
+		install(code, program)
 	end
 end
 
@@ -131,33 +139,32 @@ end
 
 
 
-if not http then
-	print( "Pastebin requires http API" )
-	print( "Set enableAPI_http to 1 in mod_ComputerCraft.cfg" )
-	return
-end
-
 local function run(tArgs)
+	if not http then
+		print( "Pastebin requires http API" )
+		print( "Set enableAPI_http to 1 in mod_ComputerCraft.cfg" )
+		return
+	end
 
 	loadInstalledPrograms()
 
 	local command = tArgs[1]
-	if command == "put" then
+	if command == upload_argument_name then
 		if #tArgs < 2 then
 			printUsage()
 		  	return
 		end
 		local sFile = tArgs[2]
-		put(sFile)
-	elseif command == "get" then
+		upload(sFile)
+	elseif command == install_argument_name then
 		if #tArgs < 3 then
 			printUsage()
 			return
 		end
 		local code = tArgs[2]
 		local file = tArgs[3]
-		get(code, file)
-	elseif command == "update" then
+		install(code, file)
+	elseif command == update_argument_name then
 		if #tArgs < 2 then
 			updateAllPrograms()
 		else
