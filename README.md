@@ -32,4 +32,4 @@ Registers configured resources (front, back, right) with the master and puts abo
 
 #### Order
 Graphical Ordering GUI. There is a search-as-you-type functionality for all resources registered with the master. The master sends the list as a JSON to the order program.
-[Master](https://gist.github.com/Tyderion/6298100)
+[Order](https://gist.github.com/Tyderion/6298100)
